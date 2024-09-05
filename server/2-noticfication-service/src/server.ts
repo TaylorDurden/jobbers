@@ -2,14 +2,17 @@ import http from 'http';
 
 import { winstonLogger } from '@taylordurden/jobber-shared';
 import { Logger } from 'winston';
-import { config } from './config';
 import { Application } from 'express';
+import { healthRoutes } from '@notifications/routes';
+import { config } from '@notifications/config';
 
 const SERVER_PORT = 4001;
 const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notificationService', 'debug');
 
 export function start(app: Application): void {
   startServer(app);
+  app.use('', healthRoutes());
+
   startQueues();
   startElasticsearch();
 }

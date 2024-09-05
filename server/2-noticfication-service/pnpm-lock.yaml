@@ -12,8 +12,8 @@ importers:
         specifier: ^8.10.0
         version: 8.15.0
       '@taylordurden/jobber-shared':
-        specifier: npm:@TaylorDurden/jobber-shared@^0.0.3
-        version: '@TaylorDurden/jobber-shared@0.0.3'
+        specifier: npm:@TaylorDurden/jobber-shared@^0.0.4
+        version: '@TaylorDurden/jobber-shared@0.0.4'
       amqplib:
         specifier: ^0.10.3
         version: 0.10.4
@@ -114,8 +114,8 @@ importers:
 
 packages:
 
-  '@TaylorDurden/jobber-shared@0.0.3':
-    resolution: {integrity: sha512-GXFHUquik8LTDmTYd7l1xWtsxK+PMMHivys2JnOXnff4UaY7HCpdA83IiRY1/8Trl9Qf6mbWMSHvJqPi4Cwf8A==, tarball: https://npm.pkg.github.com/download/@TaylorDurden/jobber-shared/0.0.3/224e5eb75c5ba0bfb8c225e832075d9f712dec82}
+  '@TaylorDurden/jobber-shared@0.0.4':
+    resolution: {integrity: sha512-4M5wBEqhjGPDei2SL2N17r5l9Pf4SxGD/N1p07VcgPXaP1WDRXgTuwXZ2FWqdNZjsOfanQE6YglfJsPRIzPBpQ==, tarball: https://npm.pkg.github.com/download/@TaylorDurden/jobber-shared/0.0.4/8bce39a2d5c5d4776253dfd4acdf02d20ccc3fe5}
 
   '@acuminous/bitsyntax@0.1.2':
     resolution: {integrity: sha512-29lUK80d1muEQqiUsSo+3A0yP6CdspgC95EnKBMi22Xlwt79i/En4Vr67+cXhU+cZjbti3TgGGC5wy1stIywVQ==}
@@ -3734,7 +3734,7 @@ packages:
 
 snapshots:
 
-  '@TaylorDurden/jobber-shared@0.0.3':
+  '@TaylorDurden/jobber-shared@0.0.4':
     dependencies:
       '@elastic/elasticsearch': 8.15.0
       cloudinary: 2.4.0

@@ -5,9 +5,10 @@ import { Logger } from 'winston';
 import { Application } from 'express';
 import { healthRoutes } from '@notifications/routes';
 import { config } from '@notifications/config';
+import { checkConnection } from '@notifications/elasticsearch';
 
 const SERVER_PORT = 4001;
-const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notificationService', 'debug');
+const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notificationServer', 'debug');
 
 export function start(app: Application): void {
   startServer(app);
@@ -19,7 +20,9 @@ export function start(app: Application): void {
 
 async function startQueues(): Promise<void> {}
 
-function startElasticsearch(): void {}
+function startElasticsearch(): void {
+  checkConnection();
+}
 
 function startServer(app: Application): void {
   try {
@@ -29,6 +32,6 @@ function startServer(app: Application): void {
       log.info('Notification server running on port ${SERVER_PORT}');
     });
   } catch (error) {
-    log.error('NotificationService startServer() method:', error);
+    log.log('error', 'NotificationService startServer() method:', error);
   }
 }

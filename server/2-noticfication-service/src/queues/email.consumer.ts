@@ -1,10 +1,11 @@
-import { config } from '@notifications/config';
-import { winstonLogger } from '@taylordurden/jobber-shared';
 import { Channel, ConsumeMessage } from 'amqplib';
-import { Logger } from 'winston';
 import { createConnection } from '@notifications/queues/connection';
+import { getLogger } from '@notifications/helpers';
+import { IEmailLocals } from '@taylordurden/jobber-shared';
+import { config } from '@notifications/config';
+import { sendEmail } from '@notifications/queues/mail.sender';
 
-const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'emailConsumer', 'debug');
+const log = getLogger('emailConsumer', 'debug');
 
 async function consumeAuthEmailMessages(channel: Channel): Promise<void> {
   try {
@@ -19,7 +20,16 @@ async function consumeAuthEmailMessages(channel: Channel): Promise<void> {
     await channel.bindQueue(jobberQueue.queue, exchangeName, routingKey);
     channel.consume(jobberQueue.queue, async (msg: ConsumeMessage | null) => {
       console.log(JSON.parse(msg!.content.toString()));
-      //TODO: send emails
+      const { receiverEmail, username, verifyLink, resetLink, template, otp } = JSON.parse(msg!.content.toString());
+      const locals: IEmailLocals = {
+        appLink: `${config.CLIENT_URL}`,
+        appIcon: 'https://i.ibb.co/Kyp2m0t/cover.png',
+        username,
+        verifyLink,
+        resetLink,
+        otp
+      };
+      await sendEmail(template, receiverEmail, locals);
       channel.ack(msg!);
     });
   } catch (error) {

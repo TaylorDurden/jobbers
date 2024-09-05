@@ -1,10 +1,9 @@
 import { Client } from '@elastic/elasticsearch';
 import { ClusterHealthResponse } from '@elastic/elasticsearch/lib/api/types';
 import { config } from '@notifications/config';
-import { winstonLogger } from '@taylordurden/jobber-shared';
-import { Logger } from 'winston';
+import { getLogger } from '@notifications/helpers';
 
-const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notificationElasticSearchServer', 'debug');
+const log = getLogger('notificationElasticSearchServer', 'debug');
 
 const elasticSearchClient = new Client({
   node: `${config.ELASTIC_SEARCH_URL}`

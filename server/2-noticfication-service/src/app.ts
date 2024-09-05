@@ -1,11 +1,9 @@
 import express, { Express } from 'express';
-import { winstonLogger } from '@taylordurden/jobber-shared';
-import { Logger } from 'winston';
-
-import { config } from '@notifications/config';
 import { start } from '@notifications/server';
 
-const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'notificationElasticSearchServer', 'debug');
+import { getLogger } from './helpers';
+
+const log = getLogger('notificationElasticSearchServer', 'debug');
 
 function initilize(): void {
   const app: Express = express();

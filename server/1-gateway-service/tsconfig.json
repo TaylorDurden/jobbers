@@ -25,9 +25,9 @@
       { "transform": "typescript-transform-paths", "afterDeclarations": true },
     ],
     "paths": {
-      "@notifications/*": ["src/*"]
+      "@gateway/*": ["src/*"]
     }
   },
-  "include": ["src", "tools"],
+  "include": ["src"],
   "exclude": ["node_modules"]
 }

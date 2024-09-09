@@ -12,9 +12,12 @@ import compression from 'compression';
 import { checkConnection } from '@auth/elasticsearch';
 import { createConnectionMQ } from '@auth/queues/connection';
 import { appRoutes } from '@auth/routes';
+import { Channel } from 'amqplib';
 
 const SERVER_PORT = 4002;
 const log = getLogger('authenticationServer', 'debug');
+
+export let authChannel: Channel;
 
 export function start(app: Application): void {
   securityMiddleware(app);
@@ -58,8 +61,8 @@ function routesMiddleware(app: Application) {
   appRoutes(app);
 }
 
-function startQueues() {
-  createConnectionMQ();
+async function startQueues(): Promise<void> {
+  authChannel = (await createConnectionMQ()) as Channel;
 }
 
 function startElasticSearch() {

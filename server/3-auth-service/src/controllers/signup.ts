@@ -1,23 +1,18 @@
 import crypto from 'crypto';
 import { Request, Response } from 'express';
 import { v4 as uuidV4 } from 'uuid';
-import { UploadApiResponse } from 'cloudinary';
-import {
-  BadRequestError,
-  firstLetterUppercase,
-  IAuthDocument,
-  IEmailMessageDetails,
-  lowerCase,
-  uploads
-} from '@taylordurden/jobber-shared';
+import cloudinary, { UploadApiResponse } from 'cloudinary';
+import { BadRequestError, firstLetterUppercase, IAuthDocument, IEmailMessageDetails, lowerCase } from '@taylordurden/jobber-shared';
 import { signupSchema } from '@auth/schemes/signup';
 import { createAuthUser, getUserByUsernameOrEmail, signToken } from '@auth/services/auth.service';
 import { config } from '@auth/config';
 import { publishDirectMessage } from '@auth/queues/auth.producer';
 import { authChannel } from '@auth/server';
 import { StatusCodes } from 'http-status-codes';
+import { uploads } from '@auth/helpers';
 
 export async function create(req: Request, res: Response): Promise<void> {
+  console.log(11111);
   const { error } = await signupSchema.validateAsync(req.body);
   if (error?.details) {
     throw new BadRequestError(error.details[0].message, 'SignUp create() method error');
@@ -25,9 +20,10 @@ export async function create(req: Request, res: Response): Promise<void> {
   const { username, email, password, country, profilePicture } = req.body;
   const checkIfUserExist = await getUserByUsernameOrEmail(username, email);
   if (checkIfUserExist) {
-    throw new BadRequestError('Invalid credentials. Email or Username', 'SignUp create() method error');
+    throw new BadRequestError('Email or Username existed', 'SignUp create() method error');
   }
   const profilePublicId = uuidV4();
+  console.log(`cloudinary.v2.config():${JSON.stringify(cloudinary.v2.config())}`);
   const uploadResult: UploadApiResponse = (await uploads(profilePicture, `${profilePublicId}`, true, true)) as UploadApiResponse;
   if (!uploadResult.public_id) {
     throw new BadRequestError('File upload error. Try again', 'SignUp create() method error');

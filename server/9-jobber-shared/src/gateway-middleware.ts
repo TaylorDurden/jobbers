@@ -18,13 +18,13 @@ export function verifyGatewayRequest(
   _res: Response,
   next: NextFunction
 ): void {
-  if (!req.headers?.gatewayToken) {
+  if (!req.headers?.gatewaytoken) {
     throw new NotAuthorizedError(
       'Invalid request',
       'verifyGatewayRequest() method: Request not coming from api gateway'
     );
   }
-  const token: string = req.headers?.gatewayToken as string;
+  const token: string = req.headers?.gatewaytoken as string;
   if (!token) {
     throw new NotAuthorizedError(
       'Invalid request',

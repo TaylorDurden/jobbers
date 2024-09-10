@@ -22,6 +22,6 @@ RUN npm install -g pm2 pnpm
 RUN pnpm install --frozen-lockfile --prod
 COPY --from=builder /app/build ./build
 
-EXPOSE 4000
+EXPOSE 4002
 
 CMD [ "npm", "run", "start" ]

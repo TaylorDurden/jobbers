@@ -2,7 +2,6 @@ FROM node:21-alpine3.18
 
 WORKDIR /app
 COPY package.json ./
-COPY pnpm-lock.yaml ./
 COPY tsconfig.json ./
 COPY .npmrc ./
 COPY src ./src
@@ -10,6 +9,6 @@ COPY tools ./tools
 RUN ls -a
 RUN npm install && npm install -g nodemon
 
-EXPOSE 4000
+EXPOSE 4002
 
 CMD [ "npm", "run", "dev" ]

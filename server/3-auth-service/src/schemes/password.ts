@@ -8,7 +8,7 @@ const emailSchema: ObjectSchema = Joi.object().keys({
   })
 });
 
-const passwordSchema: ObjectSchema = Joi.object().keys({
+const resetPasswordSchema = Joi.object().keys({
   password: Joi.string().required().min(4).max(12).messages({
     'string.base': 'Password should be of type string',
     'string.min': 'Invalid password',
@@ -33,7 +33,7 @@ const changePasswordSchema: ObjectSchema = Joi.object().keys({
     'string.min': 'Invalid password',
     'string.max': 'Invalid password',
     'string.empty': 'Password is a required field'
-  }),
+  })
 });
 
-export { emailSchema, passwordSchema, changePasswordSchema };
+export { emailSchema, resetPasswordSchema, changePasswordSchema };

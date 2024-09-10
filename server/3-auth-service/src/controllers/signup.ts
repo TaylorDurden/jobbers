@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { Request, Response } from 'express';
 import { v4 as uuidV4 } from 'uuid';
-import cloudinary, { UploadApiResponse } from 'cloudinary';
+import { UploadApiResponse } from 'cloudinary';
 import { BadRequestError, firstLetterUppercase, IAuthDocument, IEmailMessageDetails, lowerCase } from '@taylordurden/jobber-shared';
 import { signupSchema } from '@auth/schemes/signup';
 import { createAuthUser, getUserByUsernameOrEmail, signToken } from '@auth/services/auth.service';
@@ -12,7 +12,6 @@ import { StatusCodes } from 'http-status-codes';
 import { uploads } from '@auth/helpers';
 
 export async function create(req: Request, res: Response): Promise<void> {
-  console.log(11111);
   const { error } = await signupSchema.validateAsync(req.body);
   if (error?.details) {
     throw new BadRequestError(error.details[0].message, 'SignUp create() method error');
@@ -23,7 +22,6 @@ export async function create(req: Request, res: Response): Promise<void> {
     throw new BadRequestError('Email or Username existed', 'SignUp create() method error');
   }
   const profilePublicId = uuidV4();
-  console.log(`cloudinary.v2.config():${JSON.stringify(cloudinary.v2.config())}`);
   const uploadResult: UploadApiResponse = (await uploads(profilePicture, `${profilePublicId}`, true, true)) as UploadApiResponse;
   if (!uploadResult.public_id) {
     throw new BadRequestError('File upload error. Try again', 'SignUp create() method error');

@@ -1,3 +1,4 @@
+import { Password } from '@gateway/controllers/auth/password';
 import { SignIn } from '@gateway/controllers/auth/signin';
 import { SignUp } from '@gateway/controllers/auth/signup';
 import { VerifyEmail } from '@gateway/controllers/auth/verify-email';

@@ -5,12 +5,12 @@ import { config } from '@gateway/config';
 
 class AuthMiddleware {
   public verifyUser(req: Request, _res: Response, next: NextFunction): void {
-    if (!req['session']?.jwt) {
+    if (!req.session?.jwt) {
       throw new NotAuthorizedError('Token is not available. Please login again.', 'GatewayService verifyUser() method error');
     }
 
     try {
-      const payload: IAuthPayload = verify(req['session']?.jwt, `${config.JWT_TOKEN}`) as IAuthPayload;
+      const payload: IAuthPayload = verify(req.session?.jwt, `${config.JWT_TOKEN}`) as IAuthPayload;
       req.currentUser = payload;
     } catch (error) {
       throw new NotAuthorizedError(

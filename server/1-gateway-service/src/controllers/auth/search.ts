@@ -14,9 +14,11 @@ export class Search {
     let query = '';
     const objList = Object.entries(req.query);
     const lastItemIndex = objList.length - 1;
+    console.log('query before:', req.query);
     objList.forEach(([key, value], index) => {
       query += `${key}=${value}${index !== lastItemIndex ? '&' : ''}`;
     });
+    console.log('query after:', query);
     const response: AxiosResponse = await authService.getGigs(`${query}`, from, size, type);
     res.status(StatusCodes.OK).json({ message: response.data.message, total: response.data.total, gigs: response.data.gigs });
   }

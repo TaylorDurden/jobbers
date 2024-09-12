@@ -59,17 +59,17 @@ class AuthService {
   }
 
   async getGigs(query: string, from: string, size: string, type: string): Promise<AxiosResponse> {
-    const response: AxiosResponse = await this.axiosService.axios.get(`/search/gig/${from}/${size}/${type}?${query}`);
+    const response: AxiosResponse = await this.axiosService.axios.get(`/search/gigs/${from}/${size}/${type}?${query}`);
     return response;
   }
 
   async getGig(gigId: string): Promise<AxiosResponse> {
-    const response: AxiosResponse = await this.axiosService.axios.get(`/search/gig/${gigId}`);
+    const response: AxiosResponse = await this.axiosService.axios.get(`/search/gigs/${gigId}`);
     return response;
   }
 
   async seed(count: string): Promise<AxiosResponse> {
-    const response: AxiosResponse = await this.axiosService.axios.put(`/seed/${count}`);
+    const response: AxiosResponse = await this.axiosService.axios.post(`/seed/${count}`);
     return response;
   }
 }

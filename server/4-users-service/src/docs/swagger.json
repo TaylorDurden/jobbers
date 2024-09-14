@@ -1,0 +1,274 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Jobber User Service API",
+    "version": "1.0.0",
+    "description": "API for managing sellers and buyers"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4003",
+      "description": "Local server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Health",
+      "description": "API for user service health"
+    },
+    {
+      "name": "Sellers",
+      "description": "API for managing sellers"
+    },
+    {
+      "name": "Buyers",
+      "description": "API for managing buyers"
+    }
+  ],
+  "paths": {
+    "/api/v1/seller/id/{sellerId}": {
+      "get": {
+        "summary": "Get seller by ID",
+        "description": "Retrieve seller details by seller ID",
+        "tags": ["Sellers"],
+        "parameters": [
+          {
+            "name": "sellerId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the seller",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Seller details returned successfully"
+          },
+          "404": {
+            "description": "Seller not found"
+          }
+        }
+      }
+    },
+    "/api/v1/seller/username/{username}": {
+      "get": {
+        "summary": "Get seller by username",
+        "description": "Retrieve seller details by username",
+        "tags": ["Sellers"],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "description": "Username of the seller",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Seller details returned successfully"
+          },
+          "404": {
+            "description": "Seller not found"
+          }
+        }
+      }
+    },
+    "/api/v1/seller/random/{size}": {
+      "get": {
+        "summary": "Get random sellers",
+        "description": "Retrieve random sellers based on the size",
+        "tags": ["Sellers"],
+        "parameters": [
+          {
+            "name": "size",
+            "in": "path",
+            "required": true,
+            "description": "Number of sellers to retrieve",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Random sellers returned successfully"
+          }
+        }
+      }
+    },
+    "/api/v1/seller/create": {
+      "post": {
+        "summary": "Create a seller",
+        "description": "Create a new seller",
+        "tags": ["Sellers"],
+        "requestBody": {
+          "description": "Seller data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the seller"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Email of the seller"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Seller created successfully"
+          }
+        }
+      }
+    },
+    "/api/v1/seller/{sellerId}": {
+      "put": {
+        "summary": "Update a seller",
+        "description": "Update the details of an existing seller",
+        "tags": ["Sellers"],
+        "parameters": [
+          {
+            "name": "sellerId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the seller to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Seller data to update",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Updated name of the seller"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Updated email of the seller"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Seller updated successfully"
+          },
+          "404": {
+            "description": "Seller not found"
+          }
+        }
+      }
+    },
+    "/api/v1/seller/seed/{count}": {
+      "put": {
+        "summary": "Seed sellers",
+        "description": "Seed the database with a given number of sellers",
+        "tags": ["Sellers"],
+        "parameters": [
+          {
+            "name": "count",
+            "in": "path",
+            "required": true,
+            "description": "Number of sellers to seed",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sellers seeded successfully"
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Get user health status",
+        "description": "Check the health status of the user service",
+        "tags": ["Health"],
+        "responses": {
+          "200": {
+            "description": "User health status returned successfully"
+          }
+        }
+      }
+    },
+    "/api/v1/buyer/email": {
+      "get": {
+        "summary": "Get buyer by email",
+        "description": "Retrieve buyer details by email",
+        "tags": ["Buyers"],
+        "responses": {
+          "200": {
+            "description": "Buyer details returned successfully"
+          },
+          "404": {
+            "description": "Buyer not found"
+          }
+        }
+      }
+    },
+    "/api/v1/buyer/username": {
+      "get": {
+        "summary": "Get current buyer by username",
+        "description": "Retrieve the current buyer details by username",
+        "tags": ["Buyers"],
+        "responses": {
+          "200": {
+            "description": "Buyer details returned successfully"
+          },
+          "404": {
+            "description": "Buyer not found"
+          }
+        }
+      }
+    },
+    "/api/v1/buyer/{username}": {
+      "get": {
+        "summary": "Get buyer by username",
+        "description": "Retrieve a buyer's details by their username",
+        "tags": ["Buyers"],
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "description": "Username of the buyer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Buyer details returned successfully"
+          },
+          "404": {
+            "description": "Buyer not found"
+          }
+        }
+      }
+    }
+  }
+}

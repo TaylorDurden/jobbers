@@ -7,6 +7,7 @@ import cors from 'cors';
 import { verify } from 'jsonwebtoken';
 import compression from 'compression';
 import { Channel } from 'amqplib';
+import swaggerUi from 'swagger-ui-express';
 import { CustomError, IAuthPayload, IErrorResponse } from '@taylordurden/jobber-shared';
 import { useAppRoutes } from '@users/routes';
 import { config } from '@users/config';
@@ -18,7 +19,8 @@ import {
   consumeReviewFanoutMessages,
   consumeSeedGigDirectMessages,
   consumeSellerDirectMessage
-} from './queues/user.consumer';
+} from '@users/queues/user.consumer';
+import * as swaggerDocument from '@users/docs/swagger.json'; // 引入swagger.json
 
 const SERVER_PORT = 4003;
 const log = getLogger('usersServiceServer', 'debug');
@@ -26,6 +28,7 @@ const log = getLogger('usersServiceServer', 'debug');
 const start = (app: Application): void => {
   securityMiddleware(app);
   standardMiddleware(app);
+  addSwaggerDocs(app);
   routesMiddleware(app);
   startQueues();
   startElasticSearch();
@@ -97,4 +100,9 @@ function startServer(app: Application) {
   } catch (error) {
     log.log('error', 'UsersService startServer() method error:', error);
   }
+}
+
+function addSwaggerDocs(app: Application) {
+  //TODO: use 'tsoa' to generate a swagger.json file
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 }

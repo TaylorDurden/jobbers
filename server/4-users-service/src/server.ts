@@ -6,11 +6,19 @@ import helmet from 'helmet';
 import cors from 'cors';
 import { verify } from 'jsonwebtoken';
 import compression from 'compression';
+import { Channel } from 'amqplib';
 import { CustomError, IAuthPayload, IErrorResponse } from '@taylordurden/jobber-shared';
 import { useAppRoutes } from '@users/routes';
 import { config } from '@users/config';
 import { checkConnection } from '@users/elasticsearch';
 import { getLogger } from '@users/helpers';
+import { createMQConnection } from '@users/queues/connection';
+import {
+  consumeBuyerDirectMessage,
+  consumeReviewFanoutMessages,
+  consumeSeedGigDirectMessages,
+  consumeSellerDirectMessage
+} from './queues/user.consumer';
 
 const SERVER_PORT = 4003;
 const log = getLogger('usersServiceServer', 'debug');
@@ -57,7 +65,13 @@ function routesMiddleware(app: Application) {
   useAppRoutes(app);
 }
 
-function startQueues() {}
+async function startQueues() {
+  const userChannel: Channel = (await createMQConnection()) as Channel;
+  await consumeBuyerDirectMessage(userChannel);
+  await consumeSellerDirectMessage(userChannel);
+  await consumeReviewFanoutMessages(userChannel);
+  await consumeSeedGigDirectMessages(userChannel);
+}
 
 function startElasticSearch() {
   checkConnection();

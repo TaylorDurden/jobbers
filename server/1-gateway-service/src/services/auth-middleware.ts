@@ -1,4 +1,4 @@
-import { BadRequestError, IAuthPayload, NotAuthorizedError } from '@taylordurden/jobber-shared';
+import { IAuthPayload, NotAuthorizedError } from '@taylordurden/jobber-shared';
 import { Request, Response, NextFunction } from 'express';
 import { verify } from 'jsonwebtoken';
 import { config } from '@gateway/config';
@@ -23,7 +23,7 @@ class AuthMiddleware {
 
   public checkAuthentication(req: Request, _res: Response, next: NextFunction): void {
     if (!req.currentUser) {
-      throw new BadRequestError('Authentication is required to access this route.', 'GatewayService checkAuthentication() method error');
+      throw new NotAuthorizedError('Authentication is required to access this route.', 'GatewayService checkAuthentication() method error');
     }
     next();
   }

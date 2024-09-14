@@ -3,7 +3,7 @@
 @urlPath = api/gateway/v1/auth
 
 ###
-POST {{baseUrl}}/{{urlPath}}/signup
+ POST {{baseUrl}}/{{urlPath}}/signup
 Content-Type: application/json
 Accept: application/json
 withCredentials: true

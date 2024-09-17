@@ -5,10 +5,10 @@ import { getLogger } from './helpers';
 
 const log = getLogger('notificationElasticSearchServer', 'debug');
 
-function initilize(): void {
+function initialize(): void {
   const app: Express = express();
   start(app);
   log.info('Notification Service Initialized');
 }
 
-initilize();
+initialize();

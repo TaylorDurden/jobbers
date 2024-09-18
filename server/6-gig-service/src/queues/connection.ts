@@ -13,7 +13,7 @@ async function createMQConnection(): Promise<Channel | undefined> {
     closeConnection(channel, connection);
     return channel;
   } catch (error) {
-    log.log('error', 'ChatService createConnection() method error:', error);
+    log.log('error', 'ChatService createMQConnection() method error:', error);
     return undefined;
   }
 }

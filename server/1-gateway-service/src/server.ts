@@ -8,15 +8,20 @@ import hpp from 'hpp';
 import { Application, json, Request, Response, NextFunction, urlencoded } from 'express';
 import { CustomError, IErrorResponse, winstonLogger } from '@taylordurden/jobber-shared';
 import { StatusCodes } from 'http-status-codes';
+import { Server } from 'socket.io';
+import { createAdapter } from '@socket.io/redis-adapter';
+import { createClient } from 'redis';
 import { config } from '@gateway/config';
 import { elasticSearch } from '@gateway/elasticsearch';
 import { appRoutes } from '@gateway/routes';
 import { axiosAuthInstance } from '@gateway/services/api/auth.service';
 import { axiosBuyerInstance } from '@gateway/services/api/buyer.service';
 import { axiosSellerInstance } from '@gateway/services/api/seller.service';
+import { SocketIOAppHandler } from '@gateway/sockets/socket';
 
 const SERVER_PORT = 4000;
 const log = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'apiGatewayServer', 'debug');
+export let socketIO: Server;
 
 export class GatewayServer {
   private app: Application;
@@ -103,6 +108,26 @@ export class GatewayServer {
     } catch (error) {
       log.log('error', 'GatewayService startServer() error method:', error);
     }
+  }
+
+  private async createSocketIO(httpServer: http.Server): Promise<Server> {
+    const io: Server = new Server(httpServer, {
+      cors: {
+        origin: `${config.CLIENT_URL}`,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+      }
+    });
+    const pubClient = createClient({ url: config.REDIS_HOST });
+    const subClient = pubClient.duplicate();
+    await Promise.all([pubClient.connect(), subClient.connect()]);
+    io.adapter(createAdapter(pubClient, subClient));
+    socketIO = io;
+    return io;
+  }
+
+  private socketIOConnections(io: Server): void {
+    const socketIoApp = new SocketIOAppHandler(io);
+    socketIoApp.listen();
   }
 
   private async startHttpServer(httpServer: http.Server): Promise<void> {

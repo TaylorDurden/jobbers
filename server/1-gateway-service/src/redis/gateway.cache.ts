@@ -29,7 +29,7 @@ export class GatewayCache {
       if (!this.client.isOpen) {
         await this.client.connect();
       }
-      const index: number | null = await this.client.LPOS(key, value);
+      const index = await this.client.LPOS(key, value);
       if (index === null) {
         await this.client.LPUSH(key, value);
         log.info(`User ${value} added`);

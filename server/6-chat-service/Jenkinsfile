@@ -1,6 +1,6 @@
 namespace = "production"
-serviceName = "jobber-users"
-service = "Jobber Users"
+serviceName = "jobber-chat"
+service = "Jobber Chat"
 
 def groovyMethods
 
@@ -18,7 +18,7 @@ pipeline {
 
   environment {
     DOCKER_CREDENTIALS = credentials("dockerhub")
-    IMAGE_NAME = "taylordurden" + "/" + "jobber-users"
+    IMAGE_NAME = "<your-dockerhub-username>" + "/" + "jobber-chat"
     IMAGE_TAG = "stable-${BUILD_NUMBER}"
   }
 
@@ -39,7 +39,7 @@ pipeline {
             groovyMethods = load("functions.groovy")
           }
         }
-        // Add your users github url to url field
+        // Add your chat github url to url field
         git branch: 'main', credentialsId: 'github', url: ''
         sh 'npm install'
       }

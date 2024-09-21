@@ -14,6 +14,7 @@ FROM node:21-alpine3.18
 WORKDIR /app
 RUN apk add --no-cache curl
 COPY package*.json ./
+COPY pnpm-lock.yaml ./
 COPY tsconfig.json ./
 COPY .npmrc ./
 RUN npm install -g pm2 pnpm

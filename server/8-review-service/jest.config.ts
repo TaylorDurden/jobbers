@@ -6,11 +6,11 @@ const config: Config.InitialOptions = {
   verbose: true,
   coverageDirectory: 'coverage',
   collectCoverage: true,
-  testPathIgnorePatterns: ['/node_modules'],
+  testPathIgnorePatterns: ['/node_modules/'],
   transform: {
     '^.+\\.ts?$': 'ts-jest'
   },
-  testMatch: ['<rootDir>/src/**/test/*.ts', '<rootDir>/src/**/__test__/*.ts'],
+  testMatch: ['<rootDir>/src/**/test/*.ts'],
   collectCoverageFrom: ['src/**/*.ts', '!src/**/test/*.ts?(x)', '!**/node_modules/**'],
   coverageThreshold: {
     global: {
@@ -22,7 +22,7 @@ const config: Config.InitialOptions = {
   },
   coverageReporters: ['text-summary', 'lcov'],
   moduleNameMapper: {
-    '@gateway/(.*)': ['<rootDir>/src/$1']
+    '@review/(.*)': ['<rootDir>/src/$1']
   }
 };
 

@@ -85,10 +85,15 @@ services:
       ES_JAVA_OPTS: -Xmx1g -Xms1g
       bootstrap.memory_lock: "true"
       discovery.type: single-node
-      xpack.security.enabled: "false"
+      network.host: 0.0.0.0
+      transport.host: 127.0.0.1
+      http.host: 0.0.0.0
+      xpack.security.enabled: "true"
       xpack.security.authc.api_key.enabled: "true"
       xpack.monitoring.collection.enabled: "true"
       xpack.security.enrollment.enabled: "true"
+      xpack.security.authc.token.enabled: "true"
+      ELASTIC_PASSWORD: admin1234
     ports:
       - 9300:9300
       - 9200:9200
@@ -105,6 +110,10 @@ services:
     restart: always
     environment:
       - ELASTICSEARCH_HOSTS=["http://elasticsearch_container:9200"]
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=kibana
+      - ELASTICSEARCH_SERVICEACCOUNT_TOKEN=AAEAAWVsYXN0aWMva2liYW5hL2pvYmJlci1raWJhbmEtdG9rZW46LWQzR3NWT1FRVGUtTXNhSzlZUVpzQQ
+      - XPACK_FLEET_AGENTS_ELASTICSEARCH_HOSTS=["http://elasticsearch_container:9200"]
     ports:
       - 5601:5601
     networks:
@@ -115,6 +124,62 @@ services:
       - elasticsearch
     mem_limit: 1g
     memswap_limit: 2g
+
+  apmServer:
+    image: docker.elastic.co/apm/apm-server:8.15.0
+    container_name: apm_server_container
+    ports:
+      - 8200:8200
+    volumes:
+      - ./apm-server.yml:/usr/share/apm-server/apm-server.yml:ro
+    networks:
+      - elastic
+    command: >
+      apm-server -e
+        -E apm-server.rum.enabled=true
+        -E setup.kibana.host=kibana_container:5601
+        -E setup.template.settings.index.number_of_replicas=0
+        -E apm-server.kibana.enabled=true
+        -E apm-server.kibana.host=kibana_container:5601
+        -E apm-server.kibana.protocol=http
+        -E strict.perms=false
+        -E apm-server.auth.anonymous.enabled=true
+
+
+  metricbeat:
+    container_name: metricbeat_container
+    image: docker.elastic.co/beats/metricbeat:8.15.0
+    user: root
+    ports:
+      - 5066:5066
+    networks:
+      - elastic
+    volumes:
+      - ./metricbeat.yml/:/usr/share/metricbeat/metricbeat.yml:ro
+      # docker module
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # system module
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /proc:/hostfs/proc:ro
+      - /:/hostfs:ro
+    command: ["--strict.perms=false", "-system.hostfs=/hostfs"]
+    depends_on:
+      - elasticsearch
+
+  heartbeat:
+    container_name: heartbeat_container
+    image: docker.elastic.co/beats/heartbeat:8.15.0
+    user: root
+    hostname: heartbeat
+    cap_add:
+      - NET_RAW
+    networks:
+      - elastic
+    command: ["--strict.perms=false"]
+    volumes:
+      - ./heartbeat.yml:/usr/share/heartbeat/heartbeat.yml:ro
+    depends_on:
+      - elasticsearch
 
   gateway:
     container_name: gateway_container
@@ -140,7 +205,7 @@ services:
       - ORDER_BASE_URL=http://localhost:4006
       - REVIEW_BASE_URL=http://localhost:4007
       - REDIS_HOST=redis://redis_container:6379
-      - ELASTIC_SEARCH_URL=http://elasticsearch_container:9200
+      - ELASTIC_SEARCH_URL=http://elastic:admin1234@elasticsearch_container:9200
       - ELASTIC_APM_SERVER_URL=http://localhost:8200
       - ELASTIC_APM_SECRET_TOKEN=
     depends_on:
@@ -162,7 +227,7 @@ services:
       - RABBITMQ_ENDPOINT=amqp://jobber:jobberpass@rabbitmq_container:5672
       - SENDER_EMAIL=uriah.boyer6@ethereal.email
       - SENDER_EMAIL_PASSWORD=D8e1dfZx4tuF3Q7tNn
-      - ELASTIC_SEARCH_URL=http://elasticsearch_container:9200
+      - ELASTIC_SEARCH_URL=http://elastic:admin1234@elasticsearch_container:9200
       - ELASTIC_APM_SERVER_URL=http://localhost:8200
       - ELASTIC_APM_SECRET_TOKEN=
     depends_on:
@@ -189,7 +254,7 @@ services:
       - CLOUD_NAME=dagpzbad8
       - CLOUD_API_KEY=411661215559471
       - CLOUD_API_SECRET=rRzCyM8n-yT_D1wprJCAewXEhhc
-      - ELASTIC_SEARCH_URL=http://elasticsearch_container:9200
+      - ELASTIC_SEARCH_URL=http://elastic:admin1234@elasticsearch_container:9200
       - ELASTIC_APM_SERVER_URL=http://apm_server_container:8200
       - ELASTIC_APM_SECRET_TOKEN=
     depends_on:

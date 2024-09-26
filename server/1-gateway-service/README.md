@@ -1,19 +1,22 @@
-## Review Microservice
+## API Gateway Microservice
 
-- The review microservice is responsible for creating and managing sellers and buyers reviews.
-- In this service, events are only `published` to other microservices.
-- Server side errors from the review microservice is sent to `elasticsearch` and can be viewed on `kibana`.
-- Review service uses these tools as the main tools
-  - `Shared library`
+- The gateway microservice is responsible for managing requests that comes from the frontend.
+- Every request that comes from the frontend must pass through the `API Gateway Service`.
+- The communication style used in the service is the `Request/Response` pattern.
+- The gateway service is also responsible for request validation. It adds the `json web token` to the cookie session and checks if the token in a request is valid.
+- All client side errors from other microservices are sent to the gateway service. The gateway service sends these errors to the client.
+- Server side errors from the gateway microservice is sent to `elasticsearch` and can be viewed on `kibana`.
+- Gateway service uses these tools as the main tools
+  - `Your shared library`
   - `NodeJS`
   - `Express`
   - `Typescript`
-  - `Rabbitmq`
+  - `Axios`
+  - `Redis`
   - `Elasticsearch`
-  - `Postgresql database`
-  - `NodeJS pg`
   - `Json web token`
   - `SocketIO`
+  - `SocketIO client`
 - There are other packages that are used.
 - You can update the version of `NodeJS` used inside the `Dockerfile` and `Dockerfile.dev`.
 - Make sure you already have your own shared library published.
@@ -34,5 +37,8 @@
 - Steps to build and push your image to docker hub
   - `docker login -u "<your-username>" -p "<your-password>" docker.io`
   - `docker build -t <your-dockerhub-username>/jobber-review .`
+    - for my instance: `docker build -t grav008/jobber-gateway .`
   - `docker tag <your-dockerhub-username>/jobber-review <your-dockerhub-username>/jobber-review:stable`
+    - for my instance: `docker tag grav008/jobber-gateway grav008/jobber-gateway:stable`
   - `docker push <your-dockerhub-username>/jobber-review:stable`
+    - for my instance: `docker push grav008/jobber-gateway:stable`

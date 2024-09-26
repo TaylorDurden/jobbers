@@ -3,3 +3,4 @@ docker-volumes
 node_modules
 build
 *.log
+.npmrc

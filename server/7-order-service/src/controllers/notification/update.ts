@@ -1,5 +1,5 @@
 import { markNotificationAsRead } from '@order/services/notification.service';
-import { IOrderNotifcation } from '@uzochukwueddie/jobber-shared';
+import { IOrderNotifcation } from '@taylordurden/jobber-shared';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 

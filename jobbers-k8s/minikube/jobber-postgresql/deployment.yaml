@@ -19,9 +19,15 @@ spec:
           image: postgres:latest
           env:
             - name: POSTGRES_USER
-              value: jobber
+              valueFrom:
+                secretKeyRef:
+                  name: jobber-backend-secret
+                  key: jobber-postgres-user
             - name: POSTGRES_PASSWORD
-              value: api
+              valueFrom:
+                secretKeyRef:
+                  name: jobber-backend-secret
+                  key: jobber-postgres-password
             - name: POSTGRES_DB
               value: jobber_reviews
             - name: PGDATA

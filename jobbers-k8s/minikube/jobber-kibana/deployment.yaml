@@ -36,8 +36,11 @@ spec:
               # add to secret file
               value: kibana
             - name: ELASTICSEARCH_SERVICEACCOUNT_TOKEN
-              # if elasticsearch restarted, we need to create the service account
-              value: AAEAAWVsYXN0aWMva2liYW5hL2pvYmJlci1raWJhbmE6d2VQRkh3NDZRQ3U5NGJYenE1eTF1dw
+              valueFrom:
+                secretKeyRef:
+                  name: jobber-backend-secret
+                  # if elasticsearch restarted, we need to create the service account
+                  key: jobber-elasticsearch-service-account-token
           volumeMounts:
             - name: kibana-config
               mountPath: /usr/share/kibana/config

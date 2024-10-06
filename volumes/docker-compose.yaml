@@ -403,6 +403,28 @@ services:
       - elasticsearch
       - postgres
 
+  jenkins:
+    container_name: jenkins_container
+    image: jenkins/jenkins:lts
+    privileged: true
+    user: root
+    ports:
+      - 8080:8080
+      - 50000:50000
+    volumes:
+      - ./docker-volumes/jenkins_compose/jenkins_configuration:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  jenkins-agent:
+    container_name: jenkins_agent_container
+    image: jenkins/ssh-agent:jdk11
+    privileged: true
+    user: root
+    expose:
+      - 22
+    environment:
+      - JENKINS_AGENT_SSH_PUBKEY=ssh-r sa AAAAB3NzaC1yc2EAAAADAQABAAABgQDMMVf+om04+cqwnkYS6iGtF0Ma6UpD0ZIoDAtNmUfmCaoD/Fal5Rv/q/RhsqoCUb0NV+hhWuYLC6lyTWxHlL+8KYWd0V6yQhw2gNW2kGwD7rxrrRHq8WMelZJIKvf4Um+Zfwio79469CXdqE9otDA+IzUlYRioBwyPlfBciUcVs3WBmMWRIi6FxSGltsC9pt/uONafoFQttb4tsCXYlVP0d97hPqaBqNw0HbSke5bz4JRDxM/4aDNVF+vX7F+xBlOimLRgne9zmwme+pDmRKDDe25ouupXS9rzS+MXExiEeI3ghY/dE4vIEK6r+Ck3QVxUfm6IzGuUCjwV+JaQtMulsEO6IdRZgo0G7L7M2rDYKW12npQ3BJrjlRjH+gtGxaChHkn+F0kfHDp2CGuIRKWNG1kixcFUizk7HTT5w87iBu/9bS3xvT0S164mNbtDAPpzvDL+liDKN3WljOzsh49aGUJMer9MzVnUOMWvSQvqjtQD7Bcl3zKmIth2rAM14z8= taylor@mbp16.local
+
 networks:
   elastic:
     name: elastic

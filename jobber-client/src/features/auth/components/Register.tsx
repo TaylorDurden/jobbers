@@ -7,7 +7,7 @@ import Dropdown from 'src/shared/dropdown/Dropdown';
 import TextInput from 'src/shared/inputs/TextInput';
 import { IModalBgProps } from 'src/shared/modals/interfaces/modal.interface';
 import ModalBg from 'src/shared/modals/ModalBg';
-import { countriesList } from 'src/shared/utils/utils.service';
+import { countriesList, saveToSessionStorage } from 'src/shared/utils/utils.service';
 import { checkImage, readAsBase64 } from 'src/shared/utils/image-utils.service';
 import { IResponse } from 'src/shared/shared.interface';
 import { ISignUpPayload } from '../interfaces/auth.interface';
@@ -16,6 +16,7 @@ import { useAuthSchema } from '../hooks/useAuthSchema';
 import { useSignUpMutation } from '../services/auth.service';
 import { registerUserSchema } from '../schemes/auth.schema';
 import { addAuthUser } from '../reducers/auth.reducer';
+import { updateLogout } from '../reducers/logout.reducer';
 
 const RegisterModal: FC<IModalBgProps> = ({ onClose, onToggle }): ReactElement => {
   const mobileOrientation = useMobileOrientation();
@@ -61,6 +62,8 @@ const RegisterModal: FC<IModalBgProps> = ({ onClose, onToggle }): ReactElement =
         const result: IResponse = await signUp(userInfo).unwrap();
         setAlertMessage('');
         dispatch(addAuthUser({ authInfo: result.user }));
+        dispatch(updateLogout(false));
+        saveToSessionStorage(true.toString(), JSON.stringify(result.user?.username));
       }
     } catch (error) {
       setAlertMessage(error?.data.message);

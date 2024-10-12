@@ -6,20 +6,45 @@ import Button from 'src/shared/button/Button';
 import TextInput from 'src/shared/inputs/TextInput';
 import { IModalBgProps } from 'src/shared/modals/interfaces/modal.interface';
 import ModalBg from 'src/shared/modals/ModalBg';
+import { useAppDispatch } from 'src/store/store';
 import { ISignInPayload } from '../interfaces/auth.interface';
+import { useSignInMutation } from '../services/auth.service';
+import { useAuthSchema } from '../hooks/useAuthSchema';
+import { loginUserSchema } from '../schemes/auth.schema';
+import { IResponse } from 'src/shared/shared.interface';
+import { addAuthUser } from '../reducers/auth.reducer';
+import { updateLogout } from '../reducers/logout.reducer';
+import { saveToSessionStorage } from 'src/shared/utils/utils.service';
 
 const LoginModal: FC<IModalBgProps> = ({ onClose, onToggle, onTogglePassword }): ReactElement => {
   const mobileOrientation = useMobileOrientation();
   const deviceData = useDeviceData(window.navigator.userAgent);
   const [alertMessage, setAlertMessage] = useState<string>('');
   const [passwordType, setPasswordType] = useState<string>('password');
-  const isLoading = false;
   const [userInfo, setUserInfo] = useState<ISignInPayload>({
     username: '',
     password: '',
     browserName: deviceData.browser.name,
     deviceType: mobileOrientation.isLandscape ? 'browser' : 'mobile'
   });
+  const dispatch = useAppDispatch();
+  const [schemaValidation] = useAuthSchema({ schema: loginUserSchema, userInfo });
+  const [signIn, { isLoading }] = useSignInMutation();
+  const onLoginUser = async (): Promise<void> => {
+    try {
+      const isValid: boolean = await schemaValidation();
+      if (isValid) {
+        const result: IResponse = await signIn(userInfo).unwrap();
+        console.log(result);
+        setAlertMessage('');
+        dispatch(addAuthUser({ authInfo: result.user }));
+        dispatch(updateLogout(false));
+        saveToSessionStorage(JSON.stringify(true), JSON.stringify(result.user?.username));
+      }
+    } catch (error) {
+      setAlertMessage(error?.data.message);
+    }
+  };
 
   return (
     <ModalBg>
@@ -97,7 +122,7 @@ const LoginModal: FC<IModalBgProps> = ({ onClose, onToggle, onTogglePassword }):
                 !userInfo.username || !userInfo.password ? 'cursor-not-allowed' : 'cursor-pointer'
               }`}
               label={`${isLoading ? 'LOGIN IN PROGRESS...' : 'LOGIN'}`}
-              // onClick={onLoginUser}
+              onClick={onLoginUser}
             />
           </div>
         </div>

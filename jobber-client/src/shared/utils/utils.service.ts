@@ -31,8 +31,27 @@ export const replaceAmpersandAndDashWithSpace = (title: string): string => {
   return titleWithoutDash.replace(/&| /g, ' ');
 };
 
+export const saveToSessionStorage = (data: string, username: string): void => {
+  window.sessionStorage.setItem('isLoggedIn', data);
+  window.sessionStorage.setItem('loggedInUser', username);
+};
+
+export const getDataFromSessionStorage = (key: string) => {
+  const data = window.sessionStorage.getItem(key) as string;
+  return JSON.parse(data);
+};
+
 export const saveToLocalStorage = (key: string, data: string): void => {
   window.localStorage.setItem(key, data);
+};
+
+export const getDataFromLocalStorage = (key: string) => {
+  const data = window.localStorage.getItem(key) as string;
+  return JSON.parse(data);
+};
+
+export const deleteFromLocalStorage = (key: string): void => {
+  window.localStorage.removeItem(key);
 };
 
 export const categories = (): string[] => {

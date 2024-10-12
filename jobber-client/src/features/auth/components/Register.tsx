@@ -8,8 +8,14 @@ import TextInput from 'src/shared/inputs/TextInput';
 import { IModalBgProps } from 'src/shared/modals/interfaces/modal.interface';
 import ModalBg from 'src/shared/modals/ModalBg';
 import { countriesList } from 'src/shared/utils/utils.service';
-import { ISignUpPayload } from '../interfaces/auth.interface';
 import { checkImage, readAsBase64 } from 'src/shared/utils/image-utils.service';
+import { IResponse } from 'src/shared/shared.interface';
+import { ISignUpPayload } from '../interfaces/auth.interface';
+import { useAppDispatch } from 'src/store/store';
+import { useAuthSchema } from '../hooks/useAuthSchema';
+import { useSignUpMutation } from '../services/auth.service';
+import { registerUserSchema } from '../schemes/auth.schema';
+import { addAuthUser } from '../reducers/auth.reducer';
 
 const RegisterModal: FC<IModalBgProps> = ({ onClose, onToggle }): ReactElement => {
   const mobileOrientation = useMobileOrientation();
@@ -29,8 +35,10 @@ const RegisterModal: FC<IModalBgProps> = ({ onClose, onToggle }): ReactElement =
     browserName: deviceData.browser.name,
     deviceType: mobileOrientation.isLandscape ? 'browser' : 'mobile'
   });
+  const [schemaValidation] = useAuthSchema({ schema: registerUserSchema, userInfo });
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const isLoading = false;
+  const dispatch = useAppDispatch();
+  const [signUp, { isLoading }] = useSignUpMutation();
 
   const handleFileChange = async (event: ChangeEvent): Promise<void> => {
     const target: HTMLInputElement = event.target as HTMLInputElement;
@@ -48,7 +56,12 @@ const RegisterModal: FC<IModalBgProps> = ({ onClose, onToggle }): ReactElement =
 
   const onRegisterUser = async (): Promise<void> => {
     try {
-      setAlertMessage('');
+      const isValid = await schemaValidation();
+      if (isValid) {
+        const result: IResponse = await signUp(userInfo).unwrap();
+        setAlertMessage('');
+        dispatch(addAuthUser({ authInfo: result.user }));
+      }
     } catch (error) {
       setAlertMessage(error?.data.message);
     }
@@ -215,18 +228,7 @@ const RegisterModal: FC<IModalBgProps> = ({ onClose, onToggle }): ReactElement =
                     <FaCamera className="flex self-center" />
                   </div>
                 )}
-                <TextInput
-                  name="image"
-                  ref={fileInputRef}
-                  type="file"
-                  style={{ display: 'none' }}
-                  onClick={() => {
-                    if (fileInputRef.current) {
-                      fileInputRef.current.value = '';
-                    }
-                  }}
-                  onChange={handleFileChange}
-                />
+                <TextInput name="image" ref={fileInputRef} type="file" style={{ display: 'none' }} onChange={handleFileChange} />
               </div>
             </div>
             <Button

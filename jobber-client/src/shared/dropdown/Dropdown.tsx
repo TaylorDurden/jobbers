@@ -33,6 +33,7 @@ const Dropdown: FC<IDropdownProps> = ({
     if (onClick) {
       onClick(selectedItem);
     }
+    setToggleDropdown(false);
   };
 
   return (
@@ -54,7 +55,7 @@ const Dropdown: FC<IDropdownProps> = ({
         />
       )}
 
-      {showSearchInput && (
+      {showSearchInput && toggleDropdown && (
         <div className="flex">
           <TextInput
             type="text"

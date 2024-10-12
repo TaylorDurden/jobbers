@@ -1,33 +1,34 @@
 import http from 'http';
 
 import 'express-async-errors';
-import cookieSession from 'cookie-session';
-import compression from 'compression';
-import cors from 'cors';
-import helmet from 'helmet';
-import hpp from 'hpp';
-import { Application, json, Request, Response, NextFunction, urlencoded } from 'express';
-import { isAxiosError } from 'axios';
 import { CustomError, IErrorResponse, winstonLogger } from '@taylordurden/jobber-shared';
+import { Application, Request, Response, json, urlencoded, NextFunction } from 'express';
+import { Logger } from 'winston';
+import cookieSession from 'cookie-session';
+import cors from 'cors';
+import hpp from 'hpp';
+import helmet from 'helmet';
+import compression from 'compression';
 import { StatusCodes } from 'http-status-codes';
-import { Server } from 'socket.io';
-import { createAdapter } from '@socket.io/redis-adapter';
-import { createClient } from 'redis';
 import { config } from '@gateway/config';
 import { elasticSearch } from '@gateway/elasticsearch';
 import { appRoutes } from '@gateway/routes';
 import { axiosAuthInstance } from '@gateway/services/api/auth.service';
 import { axiosBuyerInstance } from '@gateway/services/api/buyer.service';
 import { axiosSellerInstance } from '@gateway/services/api/seller.service';
-import { SocketIOAppHandler } from '@gateway/sockets/socket';
 import { axiosGigInstance } from '@gateway/services/api/gig.service';
+import { Server } from 'socket.io';
+import { createClient } from 'redis';
+import { createAdapter } from '@socket.io/redis-adapter';
+import { SocketIOAppHandler } from '@gateway/sockets/socket';
 import { axiosMessageInstance } from '@gateway/services/api/message.service';
 import { axiosOrderInstance } from '@gateway/services/api/order.service';
 import { axiosReviewInstance } from '@gateway/services/api/review.service';
+import { isAxiosError } from 'axios';
 
 const SERVER_PORT = 4000;
 const DEFAULT_ERROR_CODE = 500;
-const log = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'apiGatewayServer', 'debug');
+const log: Logger = winstonLogger(`${config.ELASTIC_SEARCH_URL}`, 'apiGatewayServer', 'debug');
 export let socketIO: Server;
 
 export class GatewayServer {
@@ -101,18 +102,18 @@ export class GatewayServer {
     app.use('*', (req: Request, res: Response, next: NextFunction) => {
       const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
       log.log('error', `${fullUrl} endpoint does not exist.`, '');
-      res.status(StatusCodes.NOT_FOUND).json({ message: 'The endpoint does not exist.' });
+      res.status(StatusCodes.NOT_FOUND).json({ message: 'The endpoint called does not exist.' });
       next();
     });
 
     app.use((error: IErrorResponse, _req: Request, res: Response, next: NextFunction) => {
       if (error instanceof CustomError) {
-        log.log('error', `GatewayService ${error.comingFrom}:`, error);
+        log.log('error', `GatewayService ${error.comingFrom}: ${error.message}`);
         res.status(error.statusCode).json(error.serializeErrors());
       }
 
       if (isAxiosError(error)) {
-        log.log('error', `GatewayService Axios Error - ${error?.response?.data?.comingFrom}:`, error);
+        log.log('error', `GatewayService Axios Error - ${error?.response?.data?.comingFrom}: ${error.message}`);
         res
           .status(error?.response?.data?.statusCode ?? DEFAULT_ERROR_CODE)
           .json({ message: error?.response?.data?.message ?? 'Error occurred.' });
@@ -148,11 +149,6 @@ export class GatewayServer {
     return io;
   }
 
-  private socketIOConnections(io: Server): void {
-    const socketIoApp = new SocketIOAppHandler(io);
-    socketIoApp.listen();
-  }
-
   private async startHttpServer(httpServer: http.Server): Promise<void> {
     try {
       log.info(`Gateway server has started with process id ${process.pid}`);
@@ -162,5 +158,10 @@ export class GatewayServer {
     } catch (error) {
       log.log('error', 'GatewayService startServer() error method:', error);
     }
+  }
+
+  private socketIOConnections(io: Server): void {
+    const socketIoApp = new SocketIOAppHandler(io);
+    socketIoApp.listen();
   }
 }

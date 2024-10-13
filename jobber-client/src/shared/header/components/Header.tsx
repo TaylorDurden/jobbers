@@ -3,10 +3,11 @@ import { FaBars, FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { IHeader, IHeaderModalProps } from '../interfaces/header.interface';
 import { saveToLocalStorage } from 'src/shared/utils/utils.service';
-import LoginModal from 'src/features/auth/components/Login';
-import RegisterModal from 'src/features/auth/components/Register';
 
 const Button = React.lazy(() => import('src/shared/button/Button'));
+const LoginModal = React.lazy(() => import('src/features/auth/components/Login'));
+const RegisterModal = React.lazy(() => import('src/features/auth/components/Register'));
+const ForgotPasswordModal = React.lazy(() => import('src/features/auth/components/ForgotPassword'));
 
 const Header: FC<IHeader> = ({ navClass }): ReactElement => {
   const [showModal, setShowModal] = useState<IHeaderModalProps>({
@@ -28,6 +29,12 @@ const Header: FC<IHeader> = ({ navClass }): ReactElement => {
         <RegisterModal
           onClose={() => setShowModal((item: IHeaderModalProps) => ({ ...item, register: false }))}
           onToggle={() => setShowModal((item: IHeaderModalProps) => ({ ...item, login: true, register: false }))}
+        />
+      )}
+      {showModal.forgotPassword && (
+        <ForgotPasswordModal
+          onClose={() => setShowModal((item: IHeaderModalProps) => ({ ...item, forgotPassword: false }))}
+          onToggle={() => setShowModal((item: IHeaderModalProps) => ({ ...item, login: true, forgotPassword: false }))}
         />
       )}
       <header>

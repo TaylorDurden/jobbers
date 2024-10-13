@@ -3,6 +3,7 @@ import { RouteObject, useRoutes } from 'react-router-dom';
 import AppPage from './features/AppPage';
 import Home from './features/home/Home';
 const ResetPassword = React.lazy(() => import('src/features/auth/components/ResetPassword'));
+const ConfirmEmail = React.lazy(() => import('src/features/auth/components/ConfirmEmail'));
 
 const AppRouter: FC = () => {
   const routes: RouteObject[] = [
@@ -27,6 +28,14 @@ const AppRouter: FC = () => {
       element: (
         <Suspense>
           <ResetPassword />
+        </Suspense>
+      )
+    },
+    {
+      path: 'confirm_email',
+      element: (
+        <Suspense>
+          <ConfirmEmail />
         </Suspense>
       )
     }

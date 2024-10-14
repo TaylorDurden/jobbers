@@ -27,11 +27,7 @@ const HomeGigsView: FC<IHomeProps> = ({ gigs, title, subTitle, category }): Reac
           {gigs.map((gig: ISellerGig) => (
             <div key={uuidv4()} className="rounded">
               <div className="mb-8 flex cursor-pointer flex-col gap-2">
-                <img
-                  src="https://placehold.co/330x220?text=Profile+Image"
-                  className="h-7 w-8 r ounded-full object-cover"
-                  alt="Profile image"
-                />
+                <img src="https://placehold.co/330x220?text=Profile+Image" className="w-full rounded-lg object-cover" alt="Profile image" />
                 <div className="flex items-center gap-2 relative">
                   <img
                     src="https://placehold.co/330x220?text=Profile+Image"

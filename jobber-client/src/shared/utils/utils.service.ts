@@ -118,3 +118,10 @@ export const showErrorToast = (message: string): void => {
     theme: 'colored'
   });
 };
+
+export const rating = (num: number): number => {
+  if (num) {
+    return Math.round(num * 10) / 10;
+  }
+  return 0.0;
+};

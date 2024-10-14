@@ -2,6 +2,7 @@ import React, { FC, Suspense } from 'react';
 import { RouteObject, useRoutes } from 'react-router-dom';
 import AppPage from './features/AppPage';
 import Home from './features/home/Home';
+import ProtectedRoute from './features/ProtectedRoute';
 const ResetPassword = React.lazy(() => import('src/features/auth/components/ResetPassword'));
 const ConfirmEmail = React.lazy(() => import('src/features/auth/components/ConfirmEmail'));
 
@@ -19,7 +20,9 @@ const AppRouter: FC = () => {
       path: '/',
       element: (
         <Suspense>
-          <Home />
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
         </Suspense>
       )
     },

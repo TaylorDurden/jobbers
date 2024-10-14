@@ -1,5 +1,9 @@
+import { Dispatch } from '@reduxjs/toolkit';
 import countries, { LocalizedCountryNames } from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
+import { NavigateFunction } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { logout } from 'src/features/auth/reducers/logout.reducer';
 
 countries.registerLocale(enLocale);
 
@@ -71,4 +75,46 @@ export const categories = (): string[] => {
 export const countriesList = (): string[] => {
   const countriesObj: LocalizedCountryNames<{ select: 'official' }> = countries.getNames('en', { select: 'official' });
   return Object.values(countriesObj);
+};
+
+export const applicationLogout = async (dispatch: Dispatch, navigate: NavigateFunction) => {
+  const loggedInUsername: string = getDataFromSessionStorage('loggedInUser');
+  dispatch(logout({}));
+  // Dynamically access `authApi` and `api` once the page is loaded
+  const { authApi } = await import('src/features/auth/services/auth.service');
+  const { api } = await import('src/store/api');
+  if (loggedInUsername) {
+    dispatch(authApi.endpoints.removeLoggedInUser.initiate(`${loggedInUsername}`, { track: false }) as never);
+  }
+  dispatch(api.util.resetApiState());
+  dispatch(authApi.endpoints.logout.initiate() as never);
+  saveToSessionStorage(JSON.stringify(false), JSON.stringify(''));
+  deleteFromLocalStorage('becomeASeller');
+  navigate('/');
+};
+
+export const showSuccessToast = (message: string): void => {
+  toast.success(message, {
+    position: 'bottom-right',
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: false,
+    draggable: false,
+    progress: undefined,
+    theme: 'colored'
+  });
+};
+
+export const showErrorToast = (message: string): void => {
+  toast.error(message, {
+    position: 'bottom-right',
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: false,
+    draggable: false,
+    progress: undefined,
+    theme: 'colored'
+  });
 };

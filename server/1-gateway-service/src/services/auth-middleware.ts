@@ -11,6 +11,8 @@ class AuthMiddleware {
 
     try {
       const payload: IAuthPayload = verify(req.session?.jwt, `${config.JWT_TOKEN}`) as IAuthPayload;
+      console.log(req.session);
+      console.log(payload);
       req.currentUser = payload;
     } catch (error) {
       throw new NotAuthorizedError(

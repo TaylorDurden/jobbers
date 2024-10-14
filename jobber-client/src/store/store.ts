@@ -1,11 +1,10 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { FLUSH, PAUSE, PERSIST, persistReducer, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import storage from 'redux-persist/lib/storage';
-import authReducer from 'src/features/auth/reducers/auth.reducer';
-import logoutReducer from 'src/features/auth/reducers/logout.reducer';
 import { api } from './api';
+import rootReducer from './rootReducer';
 
 const persistConfig = {
   key: 'root',
@@ -13,18 +12,12 @@ const persistConfig = {
   blacklist: ['clientApi', '_persist']
 };
 
-export const combineReducer = combineReducers({
-  [api.reducerPath]: api.reducer,
-  authUser: authReducer,
-  logout: logoutReducer
-});
-
-export const rootReducers = (state, action) => {
+export const rootReducers: typeof rootReducer = (state, action) => {
   // this is to reset the state to default when user logs out
   if (action.type === 'logout/logout') {
     state = {} as RootState;
   }
-  return combineReducer(state, action);
+  return rootReducer(state, action) as RootState;
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducers);

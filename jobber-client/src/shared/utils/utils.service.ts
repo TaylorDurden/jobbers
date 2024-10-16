@@ -1,9 +1,11 @@
 import { Dispatch } from '@reduxjs/toolkit';
 import countries, { LocalizedCountryNames } from 'i18n-iso-countries';
 import enLocale from 'i18n-iso-countries/langs/en.json';
+import { filter } from 'lodash';
 import { NavigateFunction } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { logout } from 'src/features/auth/reducers/logout.reducer';
+import { IOrderDocument } from 'src/features/order/interfaces/order.interface';
 
 countries.registerLocale(enLocale);
 
@@ -124,4 +126,9 @@ export const rating = (num: number): number => {
     return Math.round(num * 10) / 10;
   }
   return 0.0;
+};
+
+export const orderTypes = (status: string, orders: IOrderDocument[]): number => {
+  const orderList: IOrderDocument[] = filter(orders, (order: IOrderDocument) => lowerCase(order.status) === lowerCase(status));
+  return orderList.length;
 };

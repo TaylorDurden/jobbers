@@ -8,6 +8,8 @@ import { useCheckCurrentUserQuery } from './auth/services/auth.service';
 import { addAuthUser } from './auth/reducers/auth.reducer';
 import { IAuthUser } from './auth/interfaces/auth.interface';
 import Home from './home/Home';
+import { useGetCurrentBuyerByUsernameQuery } from './buyer/services/buyer.service';
+import { addBuyer } from './buyer/reducers/buyer.reducer';
 
 const AppPage: FC = (): ReactElement => {
   const authUser = useAppSelector((state) => state.authUser) as IAuthUser;
@@ -17,6 +19,8 @@ const AppPage: FC = (): ReactElement => {
   const dispatch = useAppDispatch();
   const navigate: NavigateFunction = useNavigate();
   const { data: currentUserData, isError } = useCheckCurrentUserQuery(undefined, { skip: authUser.id === null });
+  const { data: buyerData, isLoading: isBuyerLoading } = useGetCurrentBuyerByUsernameQuery();
+
   console.log(currentUserData);
   console.log(isError);
 
@@ -25,14 +29,14 @@ const AppPage: FC = (): ReactElement => {
       if (currentUserData && currentUserData.user && !appLogout) {
         setTokenIsValid(true);
         dispatch(addAuthUser({ authInfo: currentUserData.user }));
-        // dispatch buyer info
+        dispatch(addBuyer(buyerData?.buyer));
         // dispatch seller info
         saveToSessionStorage(JSON.stringify(true), JSON.stringify(currentUserData.user.username));
       }
     } catch (error) {
       console.error(error);
     }
-  }, [appLogout, currentUserData, dispatch]);
+  }, [appLogout, buyerData?.buyer, currentUserData, dispatch]);
 
   const logoutUser = useCallback(async () => {
     if ((!currentUserData && appLogout) || isError) {
@@ -44,6 +48,7 @@ const AppPage: FC = (): ReactElement => {
   useEffect(() => {
     checkUser();
     logoutUser();
+    console.log(1111);
   }, [checkUser, logoutUser]);
 
   if (authUser) {

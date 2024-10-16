@@ -4,8 +4,15 @@ import AppPage from './features/AppPage';
 import Home from './features/home/Home';
 import ProtectedRoute from './features/ProtectedRoute';
 import Error from './features/error/Error';
+import BuyerDashboard from './features/buyer/components/Dashboard';
 const ResetPassword = React.lazy(() => import('src/features/auth/components/ResetPassword'));
 const ConfirmEmail = React.lazy(() => import('src/features/auth/components/ConfirmEmail'));
+
+const Layout = ({ backgroundColor = '#fff', children }: { backgroundColor: string; children: ReactNode }): JSX.Element => (
+  <div style={{ backgroundColor }} className="flex flex-grow">
+    {children}
+  </div>
+);
 
 const AppRouter: FC = () => {
   const routes: RouteObject[] = [
@@ -40,6 +47,18 @@ const AppRouter: FC = () => {
       element: (
         <Suspense>
           <ConfirmEmail />
+        </Suspense>
+      )
+    },
+    {
+      path: '/users/:username/:buyerId/orders',
+      element: (
+        <Suspense>
+          <ProtectedRoute>
+            <Layout backgroundColor="#ffffff">
+              <BuyerDashboard />
+            </Layout>
+          </ProtectedRoute>
         </Suspense>
       )
     },

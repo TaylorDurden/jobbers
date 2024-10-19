@@ -5,7 +5,6 @@ const useDetectOutsideClick = (
   initialState: boolean
 ): [boolean, Dispatch<SetStateAction<boolean>>] => {
   const [isActive, setIsActive] = useState<boolean>(initialState);
-
   /**
    * It checks if the referenced DOM element exists (ref.current !== null).
    * This checks if the click occurred inside the referenced element.
@@ -24,7 +23,6 @@ const useDetectOutsideClick = (
     if (isActive) {
       window.addEventListener('click', handleClick);
     }
-    console.log(`useEffect isActive: ${isActive}`);
 
     return () => {
       window.removeEventListener('click', handleClick);

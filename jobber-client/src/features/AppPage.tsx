@@ -10,6 +10,8 @@ import { IAuthUser } from './auth/interfaces/auth.interface';
 import Home from './home/Home';
 import { useGetCurrentBuyerByUsernameQuery } from './buyer/services/buyer.service';
 import { addBuyer } from './buyer/reducers/buyer.reducer';
+import { useGetSellerByUsernameQuery } from './sellers/services/seller.service';
+import CircularPageLoader from 'src/shared/page-loader/CircularPageLoader';
 
 const AppPage: FC = (): ReactElement => {
   const authUser = useAppSelector((state) => state.authUser) as IAuthUser;
@@ -19,7 +21,10 @@ const AppPage: FC = (): ReactElement => {
   const dispatch = useAppDispatch();
   const navigate: NavigateFunction = useNavigate();
   const { data: currentUserData, isError } = useCheckCurrentUserQuery(undefined, { skip: authUser.id === null });
-  const { data: buyerData, isLoading: isBuyerLoading } = useGetCurrentBuyerByUsernameQuery();
+  const { data: buyerData, isLoading: isBuyerLoading } = useGetCurrentBuyerByUsernameQuery(undefined, { skip: authUser.id === null });
+  const { data: sellerData, isLoading: isGetSellerLoading } = useGetSellerByUsernameQuery(`${authUser.username}`, {
+    skip: authUser.id === null
+  });
 
   console.log(currentUserData);
   console.log(isError);
@@ -30,7 +35,7 @@ const AppPage: FC = (): ReactElement => {
         setTokenIsValid(true);
         dispatch(addAuthUser({ authInfo: currentUserData.user }));
         dispatch(addBuyer(buyerData?.buyer));
-        // dispatch seller info
+        dispatch(addBuyer(sellerData?.seller));
         saveToSessionStorage(JSON.stringify(true), JSON.stringify(currentUserData.user.username));
       }
     } catch (error) {
@@ -56,8 +61,14 @@ const AppPage: FC = (): ReactElement => {
       <Index />
     ) : (
       <>
-        <HomeHeader showCategoryContainer={showCategoryContainer} />
-        <Home />
+        {isBuyerLoading && isGetSellerLoading ? (
+          <CircularPageLoader />
+        ) : (
+          <>
+            <HomeHeader showCategoryContainer={showCategoryContainer} />
+            <Home />
+          </>
+        )}
       </>
     );
   } else {

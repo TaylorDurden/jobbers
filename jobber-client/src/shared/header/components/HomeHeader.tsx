@@ -1,4 +1,4 @@
-import { FC, ReactElement, useEffect, useRef, useState } from 'react';
+import { FC, ReactElement, useEffect, useRef, useState, memo } from 'react';
 // import { FaAngleLeft, FaAngleRight, FaBars, FaRegBell, FaRegEnvelope, FaTimes } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,6 +22,7 @@ const HomeHeader: FC<IHomeHeaderProps> = ({ showCategoryContainer }): ReactEleme
   const authUser = useAppSelector((state) => state.authUser);
   const logout = useAppSelector((state) => state.logout);
   const buyer = useAppSelector((state) => state.buyer as IBuyerDocument);
+  const seller = useAppSelector((state) => state.seller as ISellerDocument);
 
   const settingsDropdownRef = useRef<HTMLDivElement | null>(null);
   const messageDropdownRef = useRef<HTMLDivElement | null>(null);
@@ -39,7 +40,8 @@ const HomeHeader: FC<IHomeHeaderProps> = ({ showCategoryContainer }): ReactEleme
   const [isMessageDropdownOpen, setIsMessageDropdownOpen] = useDetectOutsideClick(messageDropdownRef, false);
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] = useDetectOutsideClick(notificationDropdownRef, false);
   const [isOrderDropdownOpen, setIsOrderDropdownOpen] = useDetectOutsideClick(orderDropdownRef, false);
-  console.log('isSettingsDropdown111:', isSettingsDropdown);
+  console.log('settingsDropdownRef:', settingsDropdownRef);
+  console.log('isSettingsDropdown:', isSettingsDropdown);
 
   const onResendEmail = async (): Promise<void> => {
     try {
@@ -52,13 +54,15 @@ const HomeHeader: FC<IHomeHeaderProps> = ({ showCategoryContainer }): ReactEleme
   };
 
   const toggleDropdown = (): void => {
-    console.log('!isSettingsDropdown:', !isSettingsDropdown);
-    console.log('isSettingsDropdown:', isSettingsDropdown);
     setIsSettingsDropdown(!isSettingsDropdown);
     // setIsMessageDropdownOpen(false);
     // setIsNotificationDropdownOpen(false);
     // setIsOrderDropdownOpen(false);
   };
+
+  useEffect(() => {
+    console.log('settingsDropdownRef current:', settingsDropdownRef.current);
+  }, []);
 
   return (
     <header>
@@ -218,7 +222,7 @@ const HomeHeader: FC<IHomeHeaderProps> = ({ showCategoryContainer }): ReactEleme
                     >
                       <div className="absolute -right-48 z-50 mt-5 w-96">
                         <SettingsDropdown
-                          seller={{} as ISellerDocument}
+                          seller={seller}
                           buyer={buyer}
                           authUser={authUser}
                           type="buyer"
@@ -260,4 +264,7 @@ const HomeHeader: FC<IHomeHeaderProps> = ({ showCategoryContainer }): ReactEleme
   );
 };
 
-export default HomeHeader;
+export default memo(
+  HomeHeader,
+  (prevProps: IHomeHeaderProps, nextProps: IHomeHeaderProps) => prevProps.showCategoryContainer !== nextProps.showCategoryContainer
+);

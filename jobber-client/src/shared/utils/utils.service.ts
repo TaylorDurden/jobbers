@@ -1,5 +1,6 @@
 import { Dispatch } from '@reduxjs/toolkit';
 import countries, { LocalizedCountryNames } from 'i18n-iso-countries';
+import millify from 'millify';
 import enLocale from 'i18n-iso-countries/langs/en.json';
 import { filter } from 'lodash';
 import { NavigateFunction } from 'react-router-dom';
@@ -149,4 +150,11 @@ export const degreeList = (): string[] => {
 
 export const languageLevel = (): string[] => {
   return ['Basic', 'Conversational', 'Fluent', 'Native'];
+};
+
+export const shortenLargeNumbers = (data: number | undefined): string => {
+  if (data === undefined) {
+    return '0';
+  }
+  return millify(data, { precision: 0 });
 };
